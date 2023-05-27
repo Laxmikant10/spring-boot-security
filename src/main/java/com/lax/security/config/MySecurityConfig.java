@@ -23,6 +23,8 @@ public class MySecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                // for "/public/**" url it will not ask for username and password
+                .antMatchers("/public/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
