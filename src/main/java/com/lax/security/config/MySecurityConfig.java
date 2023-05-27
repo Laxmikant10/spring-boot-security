@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 public class MySecurityConfig {
@@ -24,7 +27,10 @@ public class MySecurityConfig {
         http
                 .authorizeRequests()
                 // for "/public/**" url it will not ask for username and password
-                .antMatchers("/public/**").permitAll()
+                //.antMatchers("/public/**").permitAll()
+
+                //Only user how have admin role can access the "/public/**" URL
+                .antMatchers("/public/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -35,11 +41,23 @@ public class MySecurityConfig {
     //Custom username and password
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
+        List<UserDetails> userDetailsList = new ArrayList<>();
+
         UserDetails user = User.withDefaultPasswordEncoder()
                 .username("lax")
                 .password("password")
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+
+        UserDetails user2 = User.withDefaultPasswordEncoder()
+                .username("anu")
+                .password("pode")
+                .roles("ADMIN")
+                .build();
+
+        userDetailsList.add(user);
+        userDetailsList.add(user2);
+
+        return new InMemoryUserDetailsManager(userDetailsList);
     }
 }
